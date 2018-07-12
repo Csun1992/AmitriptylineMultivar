@@ -1,4 +1,4 @@
-from yellowbrick.regressor import ResidualPlot as rp
+from yellowbrick.regressor import ResidualsPlot as rp
 from sklearn.linear_model import LinearRegression as lr
 import numpy as np
 
