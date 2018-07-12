@@ -1,9 +1,16 @@
 from yellowbrick.regressor import ResidualsPlot as rp
 from sklearn.linear_model import LinearRegression as lr
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt 
 from scipy.stats import t
+from scipy.stats import probplot as pp
 import math
+
+def durbinWatson(residual):
+    numerator = sum(residual[1:][:] * residual[:-1][:])
+    denom = sum(residual * residual) 
+    r = numerator / denom
+    return 2*(1-r)
 
 tot = np.array([3389, 1101, 1131, 596, 896, 1767, 807, 1111, 645, 628, 1360, 652, 860, 500, 781,
         1070, 1754]).reshape(-1, 1)
@@ -37,11 +44,40 @@ print upper
 print "\n"
 print lower
 
+durbin_watson = durbinWatson(residual)
+print "Durbin-Watson test stats is given by: "
+print durbin_watson
 
-"""
-xRes = residual[:-1][:]
-yRes = residual[1:][:] 
-plt.scatter(xRes, yRes)
-plt.title("residual vs residual")
-plt.show()
-"""
+plt.cla()
+plt.figure(1)
+# autocorrelation test of residual to "time"
+sampleNumber = range(1, sampleSize+1)
+plt.scatter(sampleNumber, residual)
+plt.title("residual plot against sample number")
+plt.xlabel("sample number")
+plt.ylabel("residual")
+plt.savefig("./time.png")
+
+plt.figure(2)
+# residual against product of predictors
+indepen = amt * pr * qrs
+plt.scatter(indepen, residual)
+plt.title("residual against product of predictors")
+plt.xlabel("product of predictors")
+plt.ylabel("residual")
+plt.savefig("./indep.png")
+
+plt.figure(3)
+# residual vs predicted value
+plt.scatter(predicted, residual)
+plt.title("residual against predicted values")
+plt.xlabel("predicted values")
+plt.ylabel("residual")
+plt.savefig("./predicted.png")
+
+plt.figure(4)
+# Q-Q plot
+pp(np.squeeze(residual), plot=plt)
+plt.savefig("./qq.png")
+
+
