@@ -32,14 +32,24 @@ z0 = np.array([1, 1, 1200, 140, 70, 85])
 linear = lr()
 model = rp(linear)
 model.fit(X, y)
+coeff = model.coef_.reshape(-1, 1)
+coeff = np.insert(coeff, 0, model.intercept_[:], 0)
+print "the coefficient vector is "
+print coeff 
+print "\n"
 predicted = model.predict(X)
 residual = predicted - y
+
+testDat = np.array([1, 1, 1200, 140, 70, 85]).reshape(-1, 1)
+predictedTest = coeff.T.dot(testDat)
 df = sampleSize-dataDim-1
+print df
 sampleCovar = residual.T.dot(residual) / df
-tStats = t.ppf(0.025, df)
+tStats = t.ppf(0.975, df)
+print tStats
 interLen = math.sqrt(sampleCovar*(1+z0.T.dot(np.linalg.inv(Z.T.dot(Z))).dot(z0)))
-upper = predicted + tStats*interLen
-lower = predicted - tStats*interLen
+upper = predictedTest + tStats*interLen
+lower = predictedTest - tStats*interLen
 print upper
 print "\n"
 print lower
